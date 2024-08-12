@@ -1,0 +1,17 @@
+{{- if .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: s3www-servicemonitor
+  labels:
+    release: prometheus-operator
+spec:
+  selector:
+    matchLabels:
+      app: s3www
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.path }}
+      interval: 15s
+      scrapeTimeout: 10s
+{{- end }}

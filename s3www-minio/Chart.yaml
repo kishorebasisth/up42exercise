@@ -1,0 +1,5 @@
+apiVersion: v2
+name: s3www-minio
+description: A Helm chart for deploying s3www and MinIO services.
+version: 0.1.0
+appVersion: "1.0"

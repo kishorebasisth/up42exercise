@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+spec:
+  type: LoadBalancer
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+    - name: webgui
+      port: 46119
+      targetPort: 46119
+      protocol: TCP
+  selector:
+    app: minio
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3www-service
+spec:
+  type: {{ if .Values.loadBalancer.enabled }}LoadBalancer{{ else }}ClusterIP{{ end }}
+  ports:
+    - port: 8080
+      targetPort: {{ .Values.s3www.port }}
+  selector:
+    app: s3www

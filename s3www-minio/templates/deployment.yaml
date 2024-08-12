@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  labels:
+    app: minio
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: "{{ .Values.minio.image }}:{{ .Values.minio.tag }}"
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: accesskey
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: secretkey
+          args:
+            - "server"
+            - "/data"
+          volumeMounts:
+            - name: storage
+              mountPath: /data
+      volumes:
+        - name: storage
+          emptyDir: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3www
+  labels:
+    app: s3www
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: s3www
+  template:
+    metadata:
+      labels:
+        app: s3www
+    spec:
+      containers:
+        - name: s3www
+          image: "{{ .Values.s3www.image }}:{{ .Values.s3www.tag }}"
+          ports:
+            - containerPort: {{ .Values.s3www.port }}
+          args:
+          - -bucket
+          - s3wwwbucket
+          - -endpoint
+          - http://minio-service:9000
+          - -accessKey
+          - minioadmin
+          - -secretKey
+          - minioadmin 
+          - -address 
+          - 0.0.0.0:8080
+          env:
+            - name: BUCKET
+              value: "{{ .Values.minio.bucketName }}"
+            - name: ADDRESS
+              value: "{{ .Values.s3www.address }}"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: accesskey
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: secretkey

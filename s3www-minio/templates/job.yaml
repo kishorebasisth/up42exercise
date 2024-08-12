@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-file-upload
+spec:
+  template:
+    spec:
+      containers:
+        - name: file-downloader
+          image: curlimages/curl:latest
+          command:
+          - /bin/sh
+          - -c
+          - |
+            echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Display GIF</title></head><body><h1>Enjoy the GIF!</h1><img src="https://media.giphy.com/media/VdiQKDAguhDSi37gn1/giphy.gif" alt="Funny GIF"></body></html>' > /home/curl_user/index.html
+            wget https://dl.min.io/client/mc/release/linux-amd64/mc
+            chmod +x mc
+            /home/curl_user/mc alias set myminio http://minio-service:9000 $(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY)
+            /home/curl_user/mc mb myminio/$(BUCKET_NAME)
+            /home/curl_user/mc cp /home/curl_user/index.html myminio/$(BUCKET_NAME)/index.html
+            /home/curl_user/mc anonymous set public myminio/$(BUCKET_NAME)
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: accesskey
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: secretkey
+            - name: BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: minio-config
+                  key: BUCKET_NAME
+      restartPolicy: OnFailure
