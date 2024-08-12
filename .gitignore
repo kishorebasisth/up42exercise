@@ -38,3 +38,4 @@ terraform.rc
 .DS_Store
 terraform-infra/terraform.tfstate
 terraform-infra/.terraform terraform-infra/.terraform.lock.hcl
+terraform-infra/terraform.tfstate.backup
