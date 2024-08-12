@@ -60,17 +60,8 @@ spec:
           image: "{{ .Values.s3www.image }}:{{ .Values.s3www.tag }}"
           ports:
             - containerPort: {{ .Values.s3www.port }}
-          args:
-          - -bucket
-          - s3wwwbucket
-          - -endpoint
-          - http://minio-service:9000
-          - -accessKey
-          - minioadmin
-          - -secretKey
-          - minioadmin 
-          - -address 
-          - 0.0.0.0:8080
+          command: ["/bin/sh"]    
+          args: ["-c", "s3www -endpoint http://minio-service:9000 -bucket ${BUCKET} -accessKey ${AWS_ACCESS_KEY_ID} -secretKey ${AWS_SECRET_ACCESS_KEY} -address ${ADDRESS}"]
           env:
             - name: BUCKET
               value: "{{ .Values.minio.bucketName }}"

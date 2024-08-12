@@ -10,7 +10,7 @@ minio:
   consoleport: ":46119"
 
 s3www:
-  image: "y4m4/s3www"
+  image: "spaniard89/s3www-golang"
   tag: "latest"
   port: 8080
   bucket: "s3wwwbucket"
