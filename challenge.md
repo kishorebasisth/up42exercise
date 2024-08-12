@@ -24,4 +24,10 @@
 ### Strengths of the Implementation
 
 1. **Modularity and Reusability:** Helm chart approach make the deployment flexible and reusable
-2.
+2. **Kubernetes-Native Approach**: By deploying the application in Kubernetes, we leverage Kubernetes’ powerful features like auto-scaling, self-healing, and rolling updates. This ensures that the application can be managed at scale
+
+### Future work
+
+1. **Backup and Recovery:** Implementing regular backups for the MinIO storage to ensure that data can be recovered in case of a disaster and creating a disaster recovery plan
+2. **Testing and Validation:** Conducting load testing to ensure the application can handle the expected production traffic. Tools like Apache JMeter or Locust can be useful for this.
+3. **CI/CD Integration:** Integrating the Helm chart with a CI/CD pipeline to automate deployments and ensure that all changes are tested and validated before reaching production.
